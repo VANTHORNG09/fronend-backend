@@ -83,3 +83,29 @@ export interface DashboardResponse {
   tips: string[];
 }
 
+export interface Announcement {
+  id: string;
+  classId: string;
+  teacherId: string;
+  teacherName: string;
+  title: string;
+  message: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface NotificationItem {
+  id: string;
+  type: string;
+  message: string;
+  read: boolean;
+  createdAt: string;
+}
+
+export interface ActivityLogItem {
+  id: string;
+  action: string;
+  ipAddress?: string;
+  device?: string;
+  createdAt: string;
+}

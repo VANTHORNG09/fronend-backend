@@ -1,5 +1,5 @@
 import { baseApi } from "./baseApi";
-import type { User } from "@/types";
+import type { ActivityLogItem, User } from "@/types";
 
 export const profileApi = baseApi.injectEndpoints({
   endpoints: (build) => ({
@@ -21,9 +21,12 @@ export const profileApi = baseApi.injectEndpoints({
     disable2fa: build.mutation<User, void>({
       query: () => ({ url: "/profile/disable-2fa", method: "POST" }),
       invalidatesTags: ["Profile"]
+    }),
+    getActivityLog: build.query<ActivityLogItem[], void>({
+      query: () => "/profile/activity-log",
+      providesTags: ["Profile"]
     })
   })
 });
 
-export const { useGetProfileQuery, useUpdateProfileMutation, useChangePasswordMutation, useEnable2faMutation, useDisable2faMutation } = profileApi;
-
+export const { useGetProfileQuery, useUpdateProfileMutation, useChangePasswordMutation, useEnable2faMutation, useDisable2faMutation, useGetActivityLogQuery } = profileApi;

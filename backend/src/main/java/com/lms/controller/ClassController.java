@@ -4,9 +4,11 @@ import com.lms.config.AppConfig;
 import com.lms.dto.request.AddStudentsRequest;
 import com.lms.dto.request.AssignTeacherRequest;
 import com.lms.dto.request.ClassRequest;
+import com.lms.dto.request.JoinClassRequest;
 import com.lms.dto.response.ClassResponse;
 import com.lms.dto.response.UserResponse;
 import com.lms.entity.ClassStatus;
+import com.lms.security.UserPrincipal;
 import com.lms.service.ClassService;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
@@ -20,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 
 import java.util.List;
 import java.util.Map;
@@ -84,6 +87,18 @@ public class ClassController {
         return classService.students(id);
     }
 
+    @PostMapping("/join")
+    @PreAuthorize("hasRole('STUDENT')")
+    public ClassResponse join(@Valid @RequestBody JoinClassRequest request, @AuthenticationPrincipal UserPrincipal principal) {
+        return classService.joinByCode(request.classCode(), principal.getUser());
+    }
+
+    @DeleteMapping("/{id}/drop")
+    @PreAuthorize("hasRole('STUDENT')")
+    public void drop(@PathVariable UUID id, @AuthenticationPrincipal UserPrincipal principal) {
+        classService.dropClass(id, principal.getUser());
+    }
+
     @PostMapping("/{id}/teacher")
     @PreAuthorize("hasRole('ADMIN')")
     public ClassResponse assignTeacher(@PathVariable UUID id, @Valid @RequestBody AssignTeacherRequest request) {
@@ -102,4 +117,3 @@ public class ClassController {
         return Map.of("completionRate", 82, "averageGrade", 87, "gradeDistribution", List.of(12, 18, 9, 4));
     }
 }
-

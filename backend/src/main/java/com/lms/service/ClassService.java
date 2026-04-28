@@ -92,6 +92,33 @@ public class ClassService {
     }
 
     @Transactional
+    public ClassResponse joinByCode(String classCode, User student) {
+        if (student.getRole() != Role.STUDENT) {
+            throw new IllegalArgumentException("Only students can join classes by code");
+        }
+        LmsClass c = classRepository.findByClassCode(classCode.trim().toUpperCase())
+                .filter(item -> item.getDeletedAt() == null && item.getStatus() == ClassStatus.ACTIVE)
+                .orElseThrow(() -> new ResourceNotFoundException("Active class not found for code"));
+        ClassEnrollment enrollment = enrollmentRepository.findByLmsClassIdAndStudentId(c.getId(), student.getId()).orElseGet(() -> {
+            ClassEnrollment created = new ClassEnrollment();
+            created.setLmsClass(c);
+            created.setStudent(student);
+            return created;
+        });
+        enrollment.setDroppedAt(null);
+        enrollmentRepository.save(enrollment);
+        return ClassResponse.from(c, enrollmentRepository.countByLmsClassIdAndDroppedAtIsNull(c.getId()));
+    }
+
+    @Transactional
+    public void dropClass(UUID classId, User student) {
+        enrollmentRepository.findByLmsClassIdAndStudentId(classId, student.getId()).ifPresent(e -> {
+            e.setDroppedAt(OffsetDateTime.now());
+            enrollmentRepository.save(e);
+        });
+    }
+
+    @Transactional
     public ClassResponse assignTeacher(UUID classId, UUID teacherId) {
         LmsClass c = get(classId);
         User teacher = userRepository.findById(teacherId).filter(u -> u.getRole() == Role.TEACHER).orElseThrow(() -> new ResourceNotFoundException("Teacher not found"));
@@ -139,4 +166,3 @@ public class ClassService {
         return code;
     }
 }
-

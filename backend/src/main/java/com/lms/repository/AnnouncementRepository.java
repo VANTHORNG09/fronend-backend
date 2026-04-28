@@ -8,5 +8,5 @@ import java.util.UUID;
 
 public interface AnnouncementRepository extends JpaRepository<Announcement, UUID> {
     List<Announcement> findTop10ByLmsClassIdAndDeletedAtIsNullOrderByCreatedAtDesc(UUID classId);
+    List<Announcement> findByLmsClassIdAndDeletedAtIsNullOrderByCreatedAtDesc(UUID classId);
 }
-

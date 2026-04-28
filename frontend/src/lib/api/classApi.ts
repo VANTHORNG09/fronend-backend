@@ -26,9 +26,16 @@ export const classApi = baseApi.injectEndpoints({
     copyClass: build.mutation<LmsClass, string>({
       query: (id) => ({ url: `/classes/${id}/copy`, method: "POST" }),
       invalidatesTags: ["Classes"]
+    }),
+    joinClass: build.mutation<LmsClass, { classCode: string }>({
+      query: (body) => ({ url: "/classes/join", method: "POST", body }),
+      invalidatesTags: ["Classes", "Dashboard"]
+    }),
+    dropClass: build.mutation<void, string>({
+      query: (id) => ({ url: `/classes/${id}/drop`, method: "DELETE" }),
+      invalidatesTags: ["Classes", "Dashboard"]
     })
   })
 });
 
-export const { useGetClassesQuery, useGetClassQuery, useCreateClassMutation, useUpdateClassMutation, useGetClassStudentsQuery, useCopyClassMutation } = classApi;
-
+export const { useGetClassesQuery, useGetClassQuery, useCreateClassMutation, useUpdateClassMutation, useGetClassStudentsQuery, useCopyClassMutation, useJoinClassMutation, useDropClassMutation } = classApi;

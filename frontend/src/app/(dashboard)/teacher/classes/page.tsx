@@ -2,17 +2,20 @@
 
 import Link from "next/link";
 import { BarChart3, BellPlus, Copy, Pin, Plus } from "lucide-react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { useCreateAnnouncementMutation } from "@/lib/api/announcementApi";
 import { useGetClassesQuery } from "@/lib/api/classApi";
 import { useAppSelector } from "@/lib/hooks/redux";
 
 export default function TeacherClassesPage() {
   const teacherId = useAppSelector((state) => state.auth.user?.id);
   const { data } = useGetClassesQuery({ teacherId });
+  const [createAnnouncement, announcementState] = useCreateAnnouncementMutation();
   return (
     <div className="grid gap-5">
       <section className="flex flex-col justify-between gap-3 md:flex-row md:items-center">
@@ -40,9 +43,17 @@ export default function TeacherClassesPage() {
                   <DialogTrigger asChild><Button size="sm" variant="ghost"><BellPlus className="h-4 w-4" /></Button></DialogTrigger>
                   <DialogContent>
                     <DialogHeader><DialogTitle>Post announcement</DialogTitle></DialogHeader>
-                    <Input placeholder="Title" />
-                    <Textarea placeholder="Message" />
-                    <Button>Post</Button>
+                    <form className="grid gap-3" onSubmit={async (event) => {
+                      event.preventDefault();
+                      const formData = new FormData(event.currentTarget);
+                      await createAnnouncement({ classId: item.id, title: String(formData.get("title")), message: String(formData.get("message")) }).unwrap();
+                      toast.success("Announcement posted");
+                      event.currentTarget.reset();
+                    }}>
+                      <Input name="title" placeholder="Title" required />
+                      <Textarea name="message" placeholder="Message" required />
+                      <Button disabled={announcementState.isLoading}>Post</Button>
+                    </form>
                   </DialogContent>
                 </Dialog>
                 <Button size="sm" variant="ghost"><BarChart3 className="h-4 w-4" /></Button>
@@ -54,4 +65,3 @@ export default function TeacherClassesPage() {
     </div>
   );
 }
-

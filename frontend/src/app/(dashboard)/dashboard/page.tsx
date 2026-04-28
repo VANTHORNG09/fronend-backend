@@ -90,7 +90,7 @@ export default function DashboardPage() {
             </CardHeader>
             <CardContent className="space-y-2 text-sm">
               <p className="flex items-center gap-2"><ClipboardList className="h-4 w-4 text-primary" />API Design Brief due soon</p>
-              <p className="flex items-center gap-2"><Users className="h-4 w-4 text-accent" />Notifications poll every 60 seconds placeholder</p>
+              <p className="flex items-center gap-2"><Users className="h-4 w-4 text-accent" />Notifications poll every 60 seconds</p>
             </CardContent>
           </Card>
         </div>
@@ -105,4 +105,3 @@ export default function DashboardPage() {
     </div>
   );
 }
-

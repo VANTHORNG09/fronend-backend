@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useChangePasswordMutation, useDisable2faMutation, useEnable2faMutation, useGetProfileQuery, useUpdateProfileMutation } from "@/lib/api/profileApi";
+import { useChangePasswordMutation, useDisable2faMutation, useEnable2faMutation, useGetActivityLogQuery, useGetProfileQuery, useUpdateProfileMutation } from "@/lib/api/profileApi";
 
 export default function ProfilePage() {
   const { data: user } = useGetProfileQuery();
@@ -17,6 +17,7 @@ export default function ProfilePage() {
   const [changePassword] = useChangePasswordMutation();
   const [enable2fa] = useEnable2faMutation();
   const [disable2fa] = useDisable2faMutation();
+  const { data: activity = [] } = useGetActivityLogQuery();
 
   if (!user) return null;
 
@@ -40,10 +41,9 @@ export default function ProfilePage() {
           <Card><CardHeader><CardTitle>Notifications and display</CardTitle></CardHeader><CardContent className="grid gap-4 md:grid-cols-2"><label className="flex items-center justify-between rounded-md border p-3 text-sm">Email new assignments <Switch defaultChecked /></label><label className="flex items-center justify-between rounded-md border p-3 text-sm">In-app graded submissions <Switch defaultChecked /></label><label className="flex items-center justify-between rounded-md border p-3 text-sm">Class announcements <Switch defaultChecked /></label><div className="rounded-md border p-3 text-sm">Language: English · Theme syncs with system</div></CardContent></Card>
         </TabsContent>
         <TabsContent value="activity">
-          <Card><CardHeader><CardTitle>Account activity log</CardTitle></CardHeader><CardContent className="grid gap-3 text-sm"><div className="rounded-md border p-3">Last login IP/device is tracked by backend audit logs.</div><div className="rounded-md border p-3">Recent actions appear here from `/api/profile/activity-log`.</div></CardContent></Card>
+          <Card><CardHeader><CardTitle>Account activity log</CardTitle></CardHeader><CardContent className="grid gap-3 text-sm">{activity.length === 0 ? <div className="rounded-md border p-3">No account activity recorded yet.</div> : activity.map((item) => <div key={item.id} className="rounded-md border p-3"><p className="font-medium">{item.action}</p><p className="text-muted-foreground">{new Date(item.createdAt).toLocaleString()} · {item.ipAddress ?? "unknown IP"}</p><p className="truncate text-xs text-muted-foreground">{item.device}</p></div>)}</CardContent></Card>
         </TabsContent>
       </Tabs>
     </div>
   );
 }
-

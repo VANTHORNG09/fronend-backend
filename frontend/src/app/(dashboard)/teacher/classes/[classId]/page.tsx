@@ -9,6 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useGetAssignmentsQuery } from "@/lib/api/assignmentApi";
+import { useGetAnnouncementsQuery } from "@/lib/api/announcementApi";
 import { useGetClassQuery, useGetClassStudentsQuery } from "@/lib/api/classApi";
 
 export default function TeacherClassDetailPage() {
@@ -16,6 +17,7 @@ export default function TeacherClassDetailPage() {
   const { data: klass } = useGetClassQuery(classId);
   const { data: students } = useGetClassStudentsQuery(classId);
   const { data: assignments } = useGetAssignmentsQuery({ classId });
+  const { data: announcements = [] } = useGetAnnouncementsQuery(classId);
 
   return (
     <div className="grid gap-5">
@@ -32,7 +34,7 @@ export default function TeacherClassDetailPage() {
           <Card><CardHeader><CardTitle>Assignments</CardTitle></CardHeader><CardContent><Table><TableHeader><TableRow><TableHead>Title</TableHead><TableHead>Due</TableHead><TableHead>Submissions</TableHead><TableHead>Average</TableHead><TableHead>Actions</TableHead></TableRow></TableHeader><TableBody>{(assignments?.content ?? []).map((assignment) => <TableRow key={assignment.id}><TableCell>{assignment.title}</TableCell><TableCell>{new Date(assignment.dueDate).toLocaleString()}</TableCell><TableCell>12/20</TableCell><TableCell>86%</TableCell><TableCell><Button asChild variant="outline" size="sm"><Link href={`/teacher/classes/${classId}/assignments/${assignment.id}/submissions`}>View submissions</Link></Button></TableCell></TableRow>)}</TableBody></Table></CardContent></Card>
         </TabsContent>
         <TabsContent value="announcements">
-          <Card><CardHeader><CardTitle>Announcements</CardTitle></CardHeader><CardContent className="grid gap-3"><div className="rounded-md border p-3"><p className="font-medium">Welcome to class</p><p className="text-sm text-muted-foreground">Announcement CRUD placeholder connected to `/api/announcements`.</p></div></CardContent></Card>
+          <Card><CardHeader><CardTitle>Announcements</CardTitle></CardHeader><CardContent className="grid gap-3">{announcements.length === 0 ? <p className="text-sm text-muted-foreground">No announcements yet.</p> : announcements.map((announcement) => <div key={announcement.id} className="rounded-md border p-3"><p className="font-medium">{announcement.title}</p><p className="text-sm text-muted-foreground">{announcement.message}</p><p className="mt-2 text-xs text-muted-foreground">{announcement.teacherName} · {new Date(announcement.createdAt).toLocaleString()}</p></div>)}</CardContent></Card>
         </TabsContent>
         <TabsContent value="gradebook">
           <Card><CardHeader><CardTitle>Gradebook</CardTitle></CardHeader><CardContent><Table><TableHeader><TableRow><TableHead>Student</TableHead>{(assignments?.content ?? []).map((a) => <TableHead key={a.id}>{a.title}</TableHead>)}<TableHead>Average</TableHead></TableRow></TableHeader><TableBody>{(students ?? []).map((s) => <TableRow key={s.id}><TableCell>{s.firstName} {s.lastName}</TableCell>{(assignments?.content ?? []).map((a) => <TableCell key={a.id}><Badge variant="outline">--</Badge></TableCell>)}<TableCell>--</TableCell></TableRow>)}</TableBody></Table></CardContent></Card>
@@ -41,4 +43,3 @@ export default function TeacherClassDetailPage() {
     </div>
   );
 }
-
