@@ -4,7 +4,6 @@ import { Download, FileUp, MoreHorizontal, Plus } from "lucide-react";
 import { toast } from "sonner";
 import { UserForm } from "@/components/forms/user-form";
 import { LoadingRows } from "@/components/common/data-state";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -12,13 +11,14 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { useCreateUserMutation, useGetUsersQuery, useUpdateUserStatusMutation } from "@/lib/api/userApi";
+import { useCreateUserMutation, useGetUsersQuery, useUpdateUserRoleMutation, useUpdateUserStatusMutation } from "@/lib/api/userApi";
 import type { Role, UserStatus } from "@/types";
 
 export default function AdminUsersPage() {
   const { data, isLoading } = useGetUsersQuery({});
   const [createUser, createState] = useCreateUserMutation();
   const [updateStatus] = useUpdateUserStatusMutation();
+  const [updateRole] = useUpdateUserRoleMutation();
 
   return (
     <div className="grid gap-5">
@@ -71,7 +71,15 @@ export default function AdminUsersPage() {
                   <TableRow key={user.id}>
                     <TableCell className="font-medium">{user.firstName} {user.lastName}</TableCell>
                     <TableCell>{user.email}</TableCell>
-                    <TableCell><Badge variant="outline">{user.role}</Badge></TableCell>
+                    <TableCell>
+                      <Select defaultValue={user.role} onValueChange={async (role) => {
+                        await updateRole({ id: user.id, role: role as Role }).unwrap();
+                        toast.success("Role updated");
+                      }}>
+                        <SelectTrigger className="h-8 min-w-28"><SelectValue /></SelectTrigger>
+                        <SelectContent>{(["ADMIN", "TEACHER", "STUDENT"] as Role[]).map((role) => <SelectItem key={role} value={role}>{role}</SelectItem>)}</SelectContent>
+                      </Select>
+                    </TableCell>
                     <TableCell><Switch checked={user.status === "ACTIVE"} onCheckedChange={(checked) => updateStatus({ id: user.id, status: checked ? "ACTIVE" : "INACTIVE" })} /></TableCell>
                     <TableCell>{user.lastLogin ? new Date(user.lastLogin).toLocaleString() : "Never"}</TableCell>
                     <TableCell><Button variant="ghost" size="icon"><MoreHorizontal className="h-4 w-4" /></Button></TableCell>
@@ -85,4 +93,3 @@ export default function AdminUsersPage() {
     </div>
   );
 }
-

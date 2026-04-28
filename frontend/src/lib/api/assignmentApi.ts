@@ -15,6 +15,14 @@ export const assignmentApi = baseApi.injectEndpoints({
       query: (body) => ({ url: "/assignments", method: "POST", body }),
       invalidatesTags: ["Assignments", "Dashboard"]
     }),
+    updateAssignment: build.mutation<Assignment, { id: string; body: Partial<Assignment> }>({
+      query: ({ id, body }) => ({ url: `/assignments/${id}`, method: "PUT", body }),
+      invalidatesTags: ["Assignments", "Dashboard"]
+    }),
+    deleteAssignment: build.mutation<void, string>({
+      query: (id) => ({ url: `/assignments/${id}`, method: "DELETE" }),
+      invalidatesTags: ["Assignments", "Dashboard"]
+    }),
     publishAssignment: build.mutation<Assignment, string>({
       query: (id) => ({ url: `/assignments/${id}/publish`, method: "POST" }),
       invalidatesTags: ["Assignments"]
@@ -22,5 +30,4 @@ export const assignmentApi = baseApi.injectEndpoints({
   })
 });
 
-export const { useGetAssignmentsQuery, useGetAssignmentQuery, useCreateAssignmentMutation, usePublishAssignmentMutation } = assignmentApi;
-
+export const { useGetAssignmentsQuery, useGetAssignmentQuery, useCreateAssignmentMutation, useUpdateAssignmentMutation, useDeleteAssignmentMutation, usePublishAssignmentMutation } = assignmentApi;

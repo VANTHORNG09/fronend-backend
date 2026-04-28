@@ -23,6 +23,18 @@ export const classApi = baseApi.injectEndpoints({
       query: (id) => `/classes/${id}/students`,
       providesTags: ["Classes"]
     }),
+    addClassStudents: build.mutation<User[], { classId: string; studentIds: string[] }>({
+      query: ({ classId, studentIds }) => ({ url: `/classes/${classId}/students`, method: "POST", body: { studentIds } }),
+      invalidatesTags: ["Classes", "Dashboard"]
+    }),
+    removeClassStudent: build.mutation<void, { classId: string; studentId: string }>({
+      query: ({ classId, studentId }) => ({ url: `/classes/${classId}/students/${studentId}`, method: "DELETE" }),
+      invalidatesTags: ["Classes", "Dashboard"]
+    }),
+    assignTeacher: build.mutation<LmsClass, { classId: string; teacherId: string }>({
+      query: ({ classId, teacherId }) => ({ url: `/classes/${classId}/teacher`, method: "POST", body: { teacherId } }),
+      invalidatesTags: ["Classes"]
+    }),
     copyClass: build.mutation<LmsClass, string>({
       query: (id) => ({ url: `/classes/${id}/copy`, method: "POST" }),
       invalidatesTags: ["Classes"]
@@ -38,4 +50,4 @@ export const classApi = baseApi.injectEndpoints({
   })
 });
 
-export const { useGetClassesQuery, useGetClassQuery, useCreateClassMutation, useUpdateClassMutation, useGetClassStudentsQuery, useCopyClassMutation, useJoinClassMutation, useDropClassMutation } = classApi;
+export const { useGetClassesQuery, useGetClassQuery, useCreateClassMutation, useUpdateClassMutation, useGetClassStudentsQuery, useAddClassStudentsMutation, useRemoveClassStudentMutation, useAssignTeacherMutation, useCopyClassMutation, useJoinClassMutation, useDropClassMutation } = classApi;

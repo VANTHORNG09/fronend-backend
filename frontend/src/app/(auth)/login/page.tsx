@@ -26,7 +26,11 @@ export default function LoginPage() {
       dispatch(setCredentials(result));
       toast.success("Signed in");
       router.push("/dashboard");
-    } catch {
+    } catch (error) {
+      if (typeof error === "object" && error !== null && "status" in error && error.status === "FETCH_ERROR") {
+        toast.error("Cannot reach the backend API at http://localhost:8080/api");
+        return;
+      }
       toast.error("Invalid email or password");
     }
   }
@@ -55,4 +59,3 @@ export default function LoginPage() {
     </main>
   );
 }
-

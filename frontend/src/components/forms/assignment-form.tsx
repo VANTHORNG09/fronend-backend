@@ -9,22 +9,29 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { assignmentSchema, type AssignmentFormValues } from "@/lib/schemas/assignment.schema";
+import type { Assignment } from "@/types";
 
-export function AssignmentForm({ classId, onSubmit, loading }: { classId?: string; onSubmit: (values: AssignmentFormValues) => void; loading?: boolean }) {
+function toLocalDateTime(value?: string) {
+  if (!value) return "";
+  const date = new Date(value);
+  return new Date(date.getTime() - date.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
+}
+
+export function AssignmentForm({ classId, assignment, onSubmit, loading }: { classId?: string; assignment?: Assignment; onSubmit: (values: AssignmentFormValues) => void; loading?: boolean }) {
   const form = useForm<AssignmentFormValues>({
     resolver: zodResolver(assignmentSchema),
     defaultValues: {
-      classId: classId ?? "",
-      title: "",
-      description: "",
-      dueDate: "",
-      publishDate: "",
-      maxPoints: 100,
-      type: "TEXT_ENTRY",
-      allowLate: true,
-      latePenaltyPerDay: 0,
-      rubric: "",
-      draft: true
+      classId: classId ?? assignment?.classId ?? "",
+      title: assignment?.title ?? "",
+      description: assignment?.description ?? "",
+      dueDate: toLocalDateTime(assignment?.dueDate),
+      publishDate: toLocalDateTime(assignment?.publishDate),
+      maxPoints: assignment?.maxPoints ?? 100,
+      type: assignment?.type ?? "TEXT_ENTRY",
+      allowLate: assignment?.allowLate ?? true,
+      latePenaltyPerDay: assignment?.latePenaltyPerDay ?? 0,
+      rubric: assignment?.rubric ?? "",
+      draft: assignment?.draft ?? true
     }
   });
   return (
@@ -40,7 +47,7 @@ export function AssignmentForm({ classId, onSubmit, loading }: { classId?: strin
         <div><Label>Max points</Label><Input type="number" {...form.register("maxPoints")} /></div>
         <div>
           <Label>Type</Label>
-          <Select defaultValue="TEXT_ENTRY" onValueChange={(v) => form.setValue("type", v as AssignmentFormValues["type"])}>
+          <Select defaultValue={assignment?.type ?? "TEXT_ENTRY"} onValueChange={(v) => form.setValue("type", v as AssignmentFormValues["type"])}>
             <SelectTrigger><SelectValue /></SelectTrigger>
             <SelectContent>
               <SelectItem value="TEXT_ENTRY">Text entry</SelectItem>
@@ -51,6 +58,7 @@ export function AssignmentForm({ classId, onSubmit, loading }: { classId?: strin
         </div>
         <div><Label>Late penalty/day</Label><Input type="number" {...form.register("latePenaltyPerDay")} /></div>
       </div>
+      <div><Label>Attachment URL optional</Label><Input placeholder="https://example.com/instructions.pdf" /></div>
       <div><Label>Rubric JSON/Text</Label><Textarea {...form.register("rubric")} /></div>
       <div className="flex flex-wrap gap-6">
         <label className="flex items-center gap-2 text-sm"><Switch checked={form.watch("allowLate")} onCheckedChange={(v) => form.setValue("allowLate", v)} /> Allow late</label>
@@ -60,4 +68,3 @@ export function AssignmentForm({ classId, onSubmit, loading }: { classId?: strin
     </form>
   );
 }
-
