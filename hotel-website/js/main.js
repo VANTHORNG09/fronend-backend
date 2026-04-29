@@ -93,8 +93,34 @@ if (checkInInput && checkOutInput) {
     });
 }
 
-// Room Cards Interaction
+// Room Cards Interaction - Open Modal
 const roomButtons = document.querySelectorAll('.btn-room');
+const roomModal = document.getElementById('room-modal');
+const closeModal = document.querySelector('.close-modal');
+
+// Room data
+const roomData = {
+    'Deluxe Room': {
+        description: 'Spacious room with city view, king-size bed, and modern amenities. Perfect for business travelers or couples looking for comfort and style.',
+        price: '$199/night',
+        icon: 'fa-bed'
+    },
+    'Executive Suite': {
+        description: 'Premium suite with separate living area, workspace, and luxury bathroom. Ideal for extended stays and executive travelers.',
+        price: '$299/night',
+        icon: 'fa-crown'
+    },
+    'Presidential Suite': {
+        description: 'Ultimate luxury with panoramic views, private terrace, and butler service. Experience the finest accommodation we offer.',
+        price: '$599/night',
+        icon: 'fa-gem'
+    },
+    'Family Room': {
+        description: 'Perfect for families with two queen beds, kitchenette, and play area. Comfortable space for the whole family to enjoy.',
+        price: '$349/night',
+        icon: 'fa-users'
+    }
+};
 
 roomButtons.forEach(button => {
     button.addEventListener('click', function() {
@@ -102,14 +128,45 @@ roomButtons.forEach(button => {
         const roomName = roomCard.querySelector('h3').textContent;
         const roomPrice = roomCard.querySelector('.room-price').textContent;
         
-        alert(`You selected: ${roomName}\nPrice: ${roomPrice}\n\nThis would typically open a detailed room view or booking page.`);
+        // Update modal content
+        document.getElementById('modal-room-name').textContent = roomName;
+        document.getElementById('modal-room-description').textContent = roomData[roomName]?.description || 'Luxury room with premium amenities.';
+        document.getElementById('modal-room-price').innerHTML = roomPrice;
         
-        // Scroll to booking section
-        const bookingSection = document.getElementById('booking');
-        if (bookingSection) {
-            bookingSection.scrollIntoView({ behavior: 'smooth' });
+        // Update modal icon
+        const modalIcon = roomModal.querySelector('.modal-image i');
+        if (roomData[roomName]?.icon) {
+            modalIcon.className = `fas ${roomData[roomName].icon}`;
         }
+        
+        // Show modal
+        roomModal.style.display = 'block';
+        document.body.style.overflow = 'hidden';
     });
+});
+
+// Close modal
+if (closeModal) {
+    closeModal.addEventListener('click', () => {
+        roomModal.style.display = 'none';
+        document.body.style.overflow = 'auto';
+    });
+}
+
+// Close modal when clicking outside
+window.addEventListener('click', (event) => {
+    if (event.target === roomModal) {
+        roomModal.style.display = 'none';
+        document.body.style.overflow = 'auto';
+    }
+});
+
+// Close modal with ESC key
+document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && roomModal.style.display === 'block') {
+        roomModal.style.display = 'none';
+        document.body.style.overflow = 'auto';
+    }
 });
 
 // Contact Form Handling
