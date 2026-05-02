@@ -1,3 +1,4 @@
+//LmsApplication.java
 package com.lms;
 
 import org.springframework.boot.SpringApplication;

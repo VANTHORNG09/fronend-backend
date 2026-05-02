@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.UUID;
 
 public class UserPrincipal implements UserDetails {
+
     private final User user;
 
     public UserPrincipal(User user) {
@@ -40,9 +41,26 @@ public class UserPrincipal implements UserDetails {
         return user.getEmail();
     }
 
+    // ✅ FIXED (important)
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    // ✅ THIS WAS MISSING (your error)
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
     @Override
     public boolean isEnabled() {
-        return user.getStatus() == UserStatus.ACTIVE && user.getDeletedAt() == null;
+        return user.getStatus() == UserStatus.ACTIVE
+                && user.getDeletedAt() == null;
     }
 }
-

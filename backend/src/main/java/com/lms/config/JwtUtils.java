@@ -14,6 +14,7 @@ import java.util.Date;
 
 @Component
 public class JwtUtils {
+
     private final SecretKey key;
     private final long accessTokenMinutes;
     private final long refreshTokenDays;
@@ -28,28 +29,44 @@ public class JwtUtils {
         this.refreshTokenDays = refreshTokenDays;
     }
 
+    // =========================
+    // CREATE ACCESS TOKEN
+    // =========================
     public String generateAccessToken(UserPrincipal principal) {
         Instant now = Instant.now();
+
         return Jwts.builder()
-                .subject(principal.getUsername())
+                .setSubject(principal.getUsername()) // FIXED (NOT .subject)
                 .claim("uid", principal.getId().toString())
                 .claim("role", principal.getUser().getRole().name())
-                .issuedAt(Date.from(now))
-                .expiration(Date.from(now.plusSeconds(accessTokenMinutes * 60)))
+                .setIssuedAt(Date.from(now))
+                .setExpiration(Date.from(now.plusSeconds(accessTokenMinutes * 60)))
                 .signWith(key)
                 .compact();
     }
 
+    // =========================
+    // PARSE TOKEN
+    // =========================
     public Claims parse(String token) {
-        return Jwts.parser().verifyWith(key).build().parseSignedClaims(token).getPayload();
+        return Jwts.parserBuilder()
+                .setSigningKey(key) // FIXED (NOT verifyWith)
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
     }
 
+    // =========================
+    // ACCESS TOKEN EXPIRY
+    // =========================
     public long accessTokenSeconds() {
         return accessTokenMinutes * 60;
     }
 
+    // =========================
+    // REFRESH TOKEN EXPIRY
+    // =========================
     public long refreshTokenDays() {
         return refreshTokenDays;
     }
 }
-
