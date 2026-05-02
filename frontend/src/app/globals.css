@@ -1,0 +1,72 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: 210 20% 98%;
+  --foreground: 222 30% 11%;
+  --card: 0 0% 100%;
+  --card-foreground: 222 30% 11%;
+  --primary: 174 72% 28%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 38 92% 58%;
+  --secondary-foreground: 222 30% 11%;
+  --muted: 210 18% 92%;
+  --muted-foreground: 215 16% 42%;
+  --accent: 204 82% 54%;
+  --accent-foreground: 0 0% 100%;
+  --destructive: 0 74% 52%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 214 18% 84%;
+  --input: 214 18% 84%;
+  --ring: 174 72% 28%;
+}
+
+.dark {
+  --background: 222 25% 10%;
+  --foreground: 210 18% 96%;
+  --card: 222 24% 13%;
+  --card-foreground: 210 18% 96%;
+  --primary: 174 61% 44%;
+  --primary-foreground: 222 25% 10%;
+  --secondary: 42 88% 61%;
+  --secondary-foreground: 222 25% 10%;
+  --muted: 220 18% 20%;
+  --muted-foreground: 215 14% 72%;
+  --accent: 204 70% 55%;
+  --accent-foreground: 222 25% 10%;
+  --destructive: 0 72% 58%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 220 17% 24%;
+  --input: 220 17% 24%;
+  --ring: 174 61% 44%;
+}
+
+* {
+  border-color: hsl(var(--border));
+}
+
+body {
+  min-height: 100vh;
+  background: hsl(var(--background));
+  color: hsl(var(--foreground));
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+.shell-grid {
+  display: grid;
+  grid-template-columns: 16rem minmax(0, 1fr);
+}
+
+@media (max-width: 900px) {
+  .shell-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
