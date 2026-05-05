@@ -1,3 +1,8 @@
+-- 🔹 Optional: Clean previous failed runs (safe for development)
+DROP TABLE IF EXISTS notification_preferences, notifications, announcements, 
+                     submissions, assignments, class_enrollments, classes, 
+                     user_activity_log, refresh_tokens, users CASCADE;
+
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
 CREATE TABLE users (
